@@ -1,10 +1,12 @@
 package app.dapk.st.design.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlin.math.absoluteValue
 
@@ -12,7 +14,7 @@ private object Palette {
     val brandPrimary = Color(0xFFb41cca)
 }
 
-private val DARK_COLOURS = darkColors(
+private val DARK_COLOURS = darkColorScheme(
     primary = Palette.brandPrimary,
     onPrimary = Color(0xDDFFFFFF),
 )
@@ -32,6 +34,29 @@ private val DARK_EXTENDED = ExtendedColors(
         Color(0xFFf6c8cb) to Color(0xFFda2535),
     )
 )
+//private fun adapt(scheme: ColorScheme) = SmallTalkColors(
+//    textHighEmphasis = scheme.onPrimaryContainer,
+//    textLowEmphasis = scheme.onSecondaryContainer,
+//    disabled = scheme.inversePrimary,
+//    borders = scheme.outline,
+//    inputBackground = scheme.surfaceVariant,
+//    appBackground = scheme.background,
+//    barsBackground = scheme.secondaryContainer,
+//    linkBackground = scheme.primaryContainer,
+//    overlay = scheme.surface.copy(alpha = 0.5f),
+//    overlayDark = scheme.inverseSurface.copy(alpha = 0.5f),
+//    primaryAccent = scheme.primary,
+//    errorAccent = scheme.error,
+//    infoAccent = scheme.secondary,
+//    highlight = scheme.inversePrimary,
+//    ownMessagesBackground = scheme.secondaryContainer,
+//    otherMessagesBackground = scheme.tertiaryContainer,
+//    deletedMessagesBackground = scheme.onError,
+//    threadSeparatorGradientStart = scheme.background,
+//    threadSeparatorGradientEnd = scheme.surfaceVariant,
+//)
+
+
 private val LIGHT_EXTENDED = DARK_EXTENDED
 
 @Immutable
@@ -51,14 +76,15 @@ data class ExtendedColors(
 
 private val LocalExtendedColors = staticCompositionLocalOf { LIGHT_EXTENDED }
 
+@Preview
 @Composable
 fun SmallTalkTheme(content: @Composable () -> Unit) {
     val systemUiController = rememberSystemUiController()
     val systemInDarkTheme = isSystemInDarkTheme()
     MaterialTheme(
-        colors = if (systemInDarkTheme) DARK_COLOURS else LIGHT_COLOURS,
+        colorScheme = if (systemInDarkTheme) DARK_COLOURS else LIGHT_COLOURS,
     ) {
-        val backgroundColor = MaterialTheme.colors.background
+        val backgroundColor = MaterialTheme.colorScheme.background
         SideEffect {
             systemUiController.setSystemBarsColor(backgroundColor)
         }

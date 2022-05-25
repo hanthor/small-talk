@@ -88,6 +88,12 @@ dependencies {
     implementation Dependencies.mavenCentral.sqldelightAndroid
     implementation Dependencies.mavenCentral.matrixOlm
 
+    debugImplementation "androidx.compose.ui:ui-tooling:1.1.1"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.1.1"
+
+    implementation "androidx.compose.material3:material3:1.0.0-alpha12"
+    implementation "androidx.compose.material3:material3-window-size-class:1.0.0-alpha12"
+
     implementation Dependencies.mavenCentral.kotlinSerializationJson
     debugImplementation Dependencies.mavenCentral.leakCanary
 }
