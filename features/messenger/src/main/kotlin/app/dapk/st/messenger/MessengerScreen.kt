@@ -9,11 +9,11 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,9 +60,10 @@ internal fun MessengerScreen(roomId: RoomId, viewModel: MessengerViewModel, navi
     Column {
         Toolbar(onNavigate = { navigator.navigate.upToHome() }, roomTitle, actions = {
             OverflowMenu {
-                DropdownMenuItem(onClick = {}) {
-                    Text("Settings")
-                }
+                DropdownMenuItem(
+                    onClick = {},
+                    text = {Text ("Settings")}
+                )
             }
         })
         Room(state.roomState)
@@ -530,7 +531,7 @@ private fun Composer(message: String, onTextChange: (String) -> Unit, onSend: ()
                 .align(Alignment.Bottom)
                 .weight(1f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = TextFieldDefaults.BackgroundOpacity), RoundedCornerShape(24.dp)),
+                .background(MaterialTheme.colorScheme.onSurface, RoundedCornerShape(24.dp)),
             contentAlignment = Alignment.TopStart,
         ) {
             Box(Modifier.padding(14.dp)) {
@@ -542,7 +543,7 @@ private fun Composer(message: String, onTextChange: (String) -> Unit, onSend: ()
                     value = message,
                     onValueChange = { onTextChange(it) },
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current.copy(LocalContentAlpha.current))
+                    textStyle = LocalTextStyle.current.copy(color = LocalContentColor.current)
                 )
             }
         }
