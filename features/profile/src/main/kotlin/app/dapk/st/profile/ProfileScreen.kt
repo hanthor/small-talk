@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,11 +84,11 @@ private fun ProfilePage(context: Context, viewModel: ProfileViewModel, profile: 
                             IconButton(modifier = Modifier
                                 .size(avatarSize * 0.314f)
                                 .align(Alignment.BottomEnd)
-                                .background(MaterialTheme.colors.primary, shape = CircleShape)
+                                .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
                                 .padding(12.dp),
                                 onClick = {}
                             ) {
-                                Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = MaterialTheme.colors.onPrimary)
+                                Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                             }
                         }
                     }

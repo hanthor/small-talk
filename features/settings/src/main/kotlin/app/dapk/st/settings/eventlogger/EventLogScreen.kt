@@ -77,14 +77,13 @@ private fun Events(selectedPageContent: SelectedState, onExit: () -> Unit, onSel
                         )
                         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                             filterItems.forEachIndexed { index, item ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded = false
-                                        onSelectTag(filterItems[index])
-                                    }
-                                ) {
-                                    Text(item ?: "all")
-                                }
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+                                    onSelectTag(filterItems[index])
+                                },
+                                    text = {Text(item ?: "all")}
+                                )
+
                             }
                         }
                     }
