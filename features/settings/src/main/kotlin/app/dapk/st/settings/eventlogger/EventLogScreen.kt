@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import app.dapk.st.core.AppLogTag
 import app.dapk.st.core.Lce
 import app.dapk.st.matrix.common.MatrixLogTag
+import androidx.compose.ui.tooling.preview.Preview
 
 private val filterItems = listOf<String?>(null) + (MatrixLogTag.values().map { it.key } + AppLogTag.values().map { it.key }).distinct()
 
@@ -60,7 +61,7 @@ private fun LogKeysList(keys: List<String>, onSelected: (String) -> Unit) {
         }
     }
 }
-
+@Preview
 @Composable
 private fun Events(selectedPageContent: SelectedState, onExit: () -> Unit, onSelectTag: (String?) -> Unit) {
     BackHandler(onBack = onExit)

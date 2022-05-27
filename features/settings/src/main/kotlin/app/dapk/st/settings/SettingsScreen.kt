@@ -13,11 +13,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -107,7 +107,7 @@ internal fun SettingsScreen(viewModel: SettingsViewModel, onSignOut: () -> Unit,
                                     label = { Text("Passphrase") },
                                     singleLine = true,
                                     leadingIcon = {
-                                        Icon(imageVector = Icons.Outlined.Lock, contentDescription = null)
+                                        Icon( Icons.Outlined.Lock, contentDescription = null)
                                     },
                                     keyboardActions = KeyboardActions(onDone = { startImportAction() }),
                                     keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
@@ -115,7 +115,7 @@ internal fun SettingsScreen(viewModel: SettingsViewModel, onSignOut: () -> Unit,
                                     trailingIcon = {
                                         val image = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                                         IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                                            Icon(imageVector = image, contentDescription = null)
+                                            Icon(image, contentDescription = null)
                                         }
                                     }
                                 )

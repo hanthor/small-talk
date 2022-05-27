@@ -3,30 +3,25 @@ package app.dapk.st.design.components
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme as LIGHT_COLOURS
+import androidx.compose.material3.dynamicDarkColorScheme as DARK_COLOURS
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlin.math.absoluteValue
 
-private object Palette {
-    val brandPrimary = Color(0xFFb41cca)
-}
 
-private val DARK_COLOURS = darkColorScheme(
-    primary = Palette.brandPrimary,
-    onPrimary = Color(0xDDFFFFFF),
-)
 
-private val LIGHT_COLOURS = DARK_COLOURS
+
+
 
 private val DARK_EXTENDED = ExtendedColors(
-    selfBubble = DARK_COLOURS.primary,
-    onSelfBubble = DARK_COLOURS.onPrimary,
-    othersBubble = Color(0x20EDEDED),
-    onOthersBubble = Color(0xFF000000),
-    selfBubbleReplyBackground = Color(0x40EAEAEA),
+    selfBubble = MaterialTheme.colorScheme.primary,
+    onSelfBubble = MaterialTheme.colorScheme.onPrimary,
+    othersBubble = MaterialTheme.colorScheme.secondary,
+    onOthersBubble = MaterialTheme.colorScheme.onSecondary,
+    selfBubbleReplyBackground = MaterialTheme.colorScheme.tertiaryContainer,
     otherBubbleReplyBackground = Color(0x20EAEAEA),
     missingImageColors = listOf(
         Color(0xFFf7c7f7) to Color(0xFFdf20de),
@@ -76,13 +71,12 @@ data class ExtendedColors(
 
 private val LocalExtendedColors = staticCompositionLocalOf { LIGHT_EXTENDED }
 
-@Preview
 @Composable
 fun SmallTalkTheme(content: @Composable () -> Unit) {
     val systemUiController = rememberSystemUiController()
     val systemInDarkTheme = isSystemInDarkTheme()
     MaterialTheme(
-        colorScheme = if (systemInDarkTheme) DARK_COLOURS else LIGHT_COLOURS,
+        colorScheme = MaterialTheme.colorScheme,
     ) {
         val backgroundColor = MaterialTheme.colorScheme.background
         SideEffect {

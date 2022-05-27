@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.dapk.st.core.Lce
 import app.dapk.st.core.LifecycleEffect
-import app.dapk.st.core.StartObserving
 import app.dapk.st.core.components.CenteredLoading
 import app.dapk.st.design.components.*
 import app.dapk.st.matrix.sync.InviteMeta
@@ -61,7 +60,7 @@ private fun ProfilePage(context: Context, viewModel: ProfileViewModel, profile: 
             .padding(8.dp), contentAlignment = Alignment.TopEnd
     ) {
         IconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
+            Icon(Icons.Filled.Settings, contentDescription = "Settings")
         }
     }
 

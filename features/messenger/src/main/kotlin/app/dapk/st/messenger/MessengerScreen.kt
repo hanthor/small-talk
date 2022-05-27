@@ -497,7 +497,7 @@ private fun RowScope.SendStatus(message: RoomEvent) {
                             .padding(2.dp)
                     ) {
                         if (isSent) {
-                            Icon(imageVector = Icons.Filled.Check, "", tint = MaterialTheme.colorScheme.onPrimary)
+                            Icon(Icons.Filled.Check, "", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 }
@@ -509,7 +509,7 @@ private fun RowScope.SendStatus(message: RoomEvent) {
                             .size(10.dp)
                             .padding(2.dp)
                     ) {
-                        Icon(imageVector = Icons.Filled.Close, "", tint = MaterialTheme.colorScheme.error)
+                        Icon(Icons.Filled.Close, "", tint = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -570,7 +570,7 @@ private fun Composer(message: String, onTextChange: (String) -> Unit, onSend: ()
             onClick = onSend,
         ) {
             Icon(
-                imageVector = Icons.Filled.Send,
+                Icons.Filled.Send,
                 contentDescription = "",
                 tint = MaterialTheme.colorScheme.onPrimary,
             )

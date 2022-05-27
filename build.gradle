@@ -99,6 +99,7 @@ ext.applyCompose = { project ->
     dependencies.implementation Dependencies.google.androidxComposeUi
     dependencies.implementation Dependencies.google.androidxComposeFoundation
     dependencies.implementation Dependencies.google.androidxComposeMaterial
+    dependencies.implementation Dependencies.google.androidxComposeMaterial3
     dependencies.implementation Dependencies.google.androidxComposeIconsExtended
     dependencies.implementation Dependencies.google.androidxActivityCompose
 }
