@@ -92,7 +92,7 @@ ext.Dependencies.with {
     def sqldelightVer = "1.5.3"
     def composeVer = "1.2.0-beta02"
     def material3Ver = "1.0.0-alpha12"
-    def ktorVer = "2.0.1"
+    def ktorVer = "2.0.2"
 
     google = new DependenciesContainer()
     google.with {
