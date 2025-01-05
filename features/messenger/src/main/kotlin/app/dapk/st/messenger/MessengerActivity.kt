@@ -3,9 +3,9 @@ package app.dapk.st.messenger
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.LocusId
 import android.os.Bundle
 import android.os.Parcelable
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
@@ -15,15 +15,19 @@ import app.dapk.st.core.*
 import app.dapk.st.core.extensions.unsafeLazy
 import app.dapk.st.matrix.common.RoomId
 import app.dapk.st.messenger.gallery.GetImageFromGallery
+import app.dapk.st.messenger.state.ComposerStateChange
+import app.dapk.st.messenger.state.MessengerState
 import app.dapk.st.navigator.MessageAttachment
+import app.dapk.st.state.state
+import coil.request.ImageRequest
 import kotlinx.parcelize.Parcelize
 
-val LocalDecyptingFetcherFactory = staticCompositionLocalOf<DecryptingFetcherFactory> { throw IllegalAccessError() }
+val LocalImageRequestFactory = staticCompositionLocalOf<ImageRequest.Builder> { throw IllegalAccessError() }
 
 class MessengerActivity : DapkActivity() {
 
     private val module by unsafeLazy { module<MessengerModule>() }
-    private val viewModel by viewModel { module.messengerViewModel() }
+    private val state: MessengerState by state { module.messengerState(readPayload()) }
 
     companion object {
 
@@ -50,12 +54,14 @@ class MessengerActivity : DapkActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val payload = readPayload<MessagerActivityPayload>()
-        val factory = module.decryptingFetcherFactory(RoomId(payload.roomId))
+        val factory = ImageRequest.Builder(applicationContext).fetcherFactory(module.decryptingFetcherFactory(RoomId(payload.roomId)))
+
+        module.deviceMeta.onAtLeastR { setLocusContext(LocusId(payload.roomId), savedInstanceState) }
 
         val galleryLauncher = registerForActivityResult(GetImageFromGallery()) {
             it?.let { uri ->
-                viewModel.post(
-                    MessengerAction.ComposerImageUpdate(
+                state.dispatch(
+                    ComposerStateChange.SelectAttachmentToSend(
                         MessageAttachment(
                             AndroidUri(it.toString()),
                             MimeType.Image,
@@ -65,11 +71,10 @@ class MessengerActivity : DapkActivity() {
             }
         }
 
-
         setContent {
             Surface(Modifier.fillMaxSize()) {
-                CompositionLocalProvider(LocalDecyptingFetcherFactory provides factory) {
-                    MessengerScreen(RoomId(payload.roomId), payload.attachments, viewModel, navigator, galleryLauncher)
+                CompositionLocalProvider(LocalImageRequestFactory provides factory) {
+                    MessengerScreen(state, navigator, galleryLauncher)
                 }
             }
         }

@@ -3,7 +3,11 @@ package app.dapk.st.core
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelLazy
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.*
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.CreationExtras
+import kotlin.reflect.KClass
 
 inline fun <reified VM : ViewModel> ComponentActivity.viewModel(
     noinline factory: () -> VM

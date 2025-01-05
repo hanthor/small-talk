@@ -1,49 +1,38 @@
 package app.dapk.st.messenger
 
+import android.content.ClipboardManager
 import android.content.Context
-import app.dapk.st.core.Base64
+import app.dapk.st.core.DeviceMeta
+import app.dapk.st.core.JobBag
 import app.dapk.st.core.ProvidableModule
+import app.dapk.st.state.createStateViewModel
 import app.dapk.st.domain.application.message.MessageOptionsStore
-import app.dapk.st.matrix.common.CredentialsStore
+import app.dapk.st.engine.ChatEngine
 import app.dapk.st.matrix.common.RoomId
-import app.dapk.st.matrix.message.MessageService
-import app.dapk.st.matrix.message.internal.ImageContentReader
-import app.dapk.st.matrix.room.RoomService
-import app.dapk.st.matrix.sync.RoomStore
-import app.dapk.st.matrix.sync.SyncService
-import java.time.Clock
+import app.dapk.st.messenger.state.MessengerState
+import app.dapk.st.messenger.state.messengerReducer
 
 class MessengerModule(
-    private val syncService: SyncService,
-    private val messageService: MessageService,
-    private val roomService: RoomService,
-    private val credentialsStore: CredentialsStore,
-    private val roomStore: RoomStore,
-    private val clock: Clock,
+    private val chatEngine: ChatEngine,
     private val context: Context,
-    private val base64: Base64,
-    private val imageMetaReader: ImageContentReader,
     private val messageOptionsStore: MessageOptionsStore,
+    val deviceMeta: DeviceMeta,
 ) : ProvidableModule {
 
-    internal fun messengerViewModel(): MessengerViewModel {
-        return MessengerViewModel(
-            messageService,
-            roomService,
-            roomStore,
-            credentialsStore,
-            timelineUseCase(),
-            LocalIdFactory(),
-            imageMetaReader,
-            messageOptionsStore,
-            clock
-        )
+    internal fun messengerState(launchPayload: MessagerActivityPayload): MessengerState {
+        return createStateViewModel {
+            messengerReducer(
+                JobBag(),
+                chatEngine,
+                CopyToClipboard(context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager),
+                deviceMeta,
+                messageOptionsStore,
+                RoomId(launchPayload.roomId),
+                launchPayload.attachments,
+                it
+            )
+        }
     }
 
-    private fun timelineUseCase(): TimelineUseCaseImpl {
-        val mergeWithLocalEchosUseCase = MergeWithLocalEchosUseCaseImpl(LocalEchoMapper(MetaMapper()))
-        return TimelineUseCaseImpl(syncService, messageService, roomService, mergeWithLocalEchosUseCase)
-    }
-
-    internal fun decryptingFetcherFactory(roomId: RoomId) = DecryptingFetcherFactory(context, base64, roomId)
+    internal fun decryptingFetcherFactory(roomId: RoomId) = DecryptingFetcherFactory(context, roomId, chatEngine.mediaDecrypter())
 }

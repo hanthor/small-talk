@@ -1,7 +1,9 @@
-applyAndroidLibraryModule(project)
+plugins {
+    id "st-android-library-conventions"
+}
 
 dependencies {
     implementation project(':core')
-    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+    implementation platform(libs.firebase.bom)
     implementation 'com.google.firebase:firebase-crashlytics'
 }

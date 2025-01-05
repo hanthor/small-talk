@@ -2,18 +2,26 @@ package app.dapk.st.login
 
 import app.dapk.st.core.ProvidableModule
 import app.dapk.st.core.extensions.ErrorTracker
-import app.dapk.st.matrix.auth.AuthService
-import app.dapk.st.matrix.room.ProfileService
+import app.dapk.st.engine.ChatEngine
+import app.dapk.st.login.state.*
 import app.dapk.st.push.PushModule
+import app.dapk.st.state.createStateViewModel
+import app.dapk.state.ReducerFactory
 
 class LoginModule(
-    private val authService: AuthService,
+    private val chatEngine: ChatEngine,
     private val pushModule: PushModule,
-    private val profileService: ProfileService,
     private val errorTracker: ErrorTracker,
 ) : ProvidableModule {
 
-    fun loginViewModel(): LoginViewModel {
-        return LoginViewModel(authService, pushModule.pushTokenRegistrar(), profileService, errorTracker)
+    fun loginState(): LoginState {
+        return createStateViewModel {
+            loginReducer(it)
+        }
+    }
+
+    fun loginReducer(eventEmitter: suspend (LoginEvent) -> Unit): ReducerFactory<LoginScreenState> {
+        val loginUseCase = LoginUseCase(chatEngine, pushModule.pushTokenRegistrars(), errorTracker)
+        return loginReducer(loginUseCase, eventEmitter)
     }
 }

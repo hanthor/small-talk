@@ -1,26 +1,30 @@
-applyAndroidComposeLibraryModule(project)
-apply plugin: 'kotlin-parcelize'
+plugins {
+    id "st-feature-conventions"
+    id "org.jetbrains.kotlin.plugin.parcelize"
+}
+
+android {
+    namespace "app.dapk.st.messenger"
+}
 
 dependencies {
-    implementation project(":matrix:services:sync")
-    implementation project(":matrix:services:message")
-    implementation project(":matrix:services:crypto")
-    implementation project(":matrix:services:room")
+    implementation "chat-engine:chat-engine"
     implementation project(":domains:android:compose-core")
     implementation project(":domains:android:viewmodel")
     implementation project(":domains:store")
+    implementation 'screen-state:screen-android'
     implementation project(":core")
     implementation project(":features:navigator")
     implementation project(":design-library")
-    implementation Dependencies.mavenCentral.coil
+    implementation libs.compose.coil
 
     kotlinTest(it)
 
-    androidImportFixturesWorkaround(project, project(":matrix:services:sync"))
-    androidImportFixturesWorkaround(project, project(":matrix:services:message"))
-    androidImportFixturesWorkaround(project, project(":matrix:common"))
+    testImplementation 'screen-state:state-test'
+    testImplementation 'chat-engine:chat-engine-test'
+
     androidImportFixturesWorkaround(project, project(":core"))
-    androidImportFixturesWorkaround(project, project(":domains:store"))
     androidImportFixturesWorkaround(project, project(":domains:android:viewmodel"))
     androidImportFixturesWorkaround(project, project(":domains:android:stub"))
+    androidImportFixturesWorkaround(project, project(":domains:store"))
 }

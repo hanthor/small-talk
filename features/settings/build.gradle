@@ -1,23 +1,24 @@
-applyAndroidComposeLibraryModule(project)
+plugins {
+    id "st-feature-conventions"
+}
 
 dependencies {
-    implementation project(":matrix:services:sync")
-    implementation project(":matrix:services:crypto")
+    implementation "chat-engine:chat-engine"
     implementation project(":features:navigator")
     implementation project(':domains:store')
     implementation project(':domains:android:push')
     implementation project(":domains:android:compose-core")
     implementation project(":domains:android:viewmodel")
+    implementation 'screen-state:screen-android'
     implementation project(":design-library")
     implementation project(":core")
 
     kotlinTest(it)
 
-    androidImportFixturesWorkaround(project, project(":matrix:services:sync"))
-    androidImportFixturesWorkaround(project, project(":matrix:services:crypto"))
-    androidImportFixturesWorkaround(project, project(":matrix:common"))
+    testImplementation 'screen-state:state-test'
+    testImplementation 'chat-engine:chat-engine-test'
     androidImportFixturesWorkaround(project, project(":core"))
-    androidImportFixturesWorkaround(project, project(":domains:store"))
     androidImportFixturesWorkaround(project, project(":domains:android:viewmodel"))
     androidImportFixturesWorkaround(project, project(":domains:android:stub"))
+    androidImportFixturesWorkaround(project, project(":domains:store"))
 }

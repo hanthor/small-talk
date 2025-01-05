@@ -1,20 +1,23 @@
 package app.dapk.st.profile
 
+import app.dapk.st.core.JobBag
 import app.dapk.st.core.ProvidableModule
+import app.dapk.st.state.createStateViewModel
 import app.dapk.st.core.extensions.ErrorTracker
-import app.dapk.st.matrix.room.ProfileService
-import app.dapk.st.matrix.room.RoomService
-import app.dapk.st.matrix.sync.SyncService
+import app.dapk.st.engine.ChatEngine
+import app.dapk.st.profile.state.ProfileState
+import app.dapk.st.profile.state.ProfileUseCase
+import app.dapk.st.profile.state.profileReducer
 
 class ProfileModule(
-    private val profileService: ProfileService,
-    private val syncService: SyncService,
-    private val roomService: RoomService,
+    private val chatEngine: ChatEngine,
     private val errorTracker: ErrorTracker,
 ) : ProvidableModule {
 
-    fun profileViewModel(): ProfileViewModel {
-        return ProfileViewModel(profileService, syncService, roomService, errorTracker)
+    fun profileState(): ProfileState {
+        return createStateViewModel { profileReducer() }
     }
+
+    fun profileReducer() = profileReducer(chatEngine, errorTracker, ProfileUseCase(chatEngine, errorTracker), JobBag())
 
 }

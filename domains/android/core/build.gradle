@@ -1,6 +1,9 @@
-plugins { id 'kotlin' }
+plugins {
+    id "kotlin"
+}
 
 dependencies {
     compileOnly project(":domains:android:stub")
+    compileOnly libs.androidx.annotation
     implementation project(":core")
 }

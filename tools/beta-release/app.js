@@ -7,7 +7,7 @@ const config = {
     rcBranchesFrom: "main",
     rcMergesTo: "release",
     packageName: "app.dapk.st",
-    matrixRoomId: "!jgNenzNPtSpJLjjsxe:matrix.org"
+    matrixRoomId: "!fuHEgUsoPRBQynkdkF:iswell.cool"
 }
 
 const rcBranchName = "release-candidate"
@@ -135,14 +135,18 @@ const createBranch = async (github, branchName, fromBranch) => {
 
 const incrementVersionFile = async (github, branchName) => {
     const versionFile = await readVersionFile(github, branchName)
-    const [date, rc] = versionFile.content.name.split("-V")
-    const today = new Date().toLocaleDateString("en-GB")
+    const [date, rc] = versionFile.content.name.split(".1")
+    const today = new Date()
+    const month = (today.getMonth() + 1).toString().padStart(2, '0')
+    const day = (today.getDay() + 1).toString().padStart(2, '0')
+    const year = today.getFullYear().toString().slice(-2)
+    const todayFormatted = `${year}/${month}/${day}`
 
     let updatedVersionName = undefined
-    if (today == date) {
-        updatedVersionName = `${date}-V${parseInt(rc) + 1}`
+    if (todayFormatted == date) {
+        updatedVersionName = `${date}.${parseInt(rc) + 1}`
     } else {
-        updatedVersionName = `${today}-V1`
+        updatedVersionName = `${todayFormatted}.1`
     }
 
     const updatedVersionFile = {

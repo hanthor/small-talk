@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Settings
@@ -21,17 +23,22 @@ import app.dapk.st.core.Lce
 import app.dapk.st.core.LifecycleEffect
 import app.dapk.st.core.components.CenteredLoading
 import app.dapk.st.design.components.*
-import app.dapk.st.matrix.sync.InviteMeta
-import app.dapk.st.matrix.sync.RoomInvite
+import app.dapk.st.engine.RoomInvite
+import app.dapk.st.engine.RoomInvite.InviteMeta
+import app.dapk.st.profile.state.Page
+import app.dapk.st.profile.state.ProfileAction
+import app.dapk.st.profile.state.ProfileState
 import app.dapk.st.settings.SettingsActivity
+import app.dapk.state.SpiderPage
+import app.dapk.state.page.PageAction
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel, onTopLevelBack: () -> Unit) {
+fun ProfileScreen(viewModel: ProfileState, onTopLevelBack: () -> Unit) {
     viewModel.ObserveEvents()
 
     LifecycleEffect(
-        onStart = { viewModel.start() },
-        onStop = { viewModel.stop() }
+        onStart = { viewModel.dispatch(ProfileAction.ComponentLifecycle.Visible) },
+        onStop = { viewModel.dispatch(ProfileAction.ComponentLifecycle.Gone) }
     )
 
     val context = LocalContext.current
@@ -39,11 +46,11 @@ fun ProfileScreen(viewModel: ProfileViewModel, onTopLevelBack: () -> Unit) {
     val onNavigate: (SpiderPage<out Page>?) -> Unit = {
         when (it) {
             null -> onTopLevelBack()
-            else -> viewModel.goTo(it)
+            else -> viewModel.dispatch(PageAction.GoTo(it))
         }
     }
 
-    Spider(currentPage = viewModel.state.page, onNavigate = onNavigate) {
+    Spider(currentPage = viewModel.current.state1.page, onNavigate = onNavigate, toolbar = { navigate, title -> Toolbar(navigate, title) }) {
         item(Page.Routes.profile) {
             ProfilePage(context, viewModel, it)
         }
@@ -54,72 +61,72 @@ fun ProfileScreen(viewModel: ProfileViewModel, onTopLevelBack: () -> Unit) {
 }
 
 @Composable
-private fun ProfilePage(context: Context, viewModel: ProfileViewModel, profile: Page.Profile) {
+private fun ProfilePage(context: Context, viewModel: ProfileState, profile: Page.Profile) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp), contentAlignment = Alignment.TopEnd
     ) {
-        IconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
-        }
-    }
+        val scrollState = rememberScrollState()
+        when (val state = profile.content) {
+            is Lce.Loading -> CenteredLoading()
+            is Lce.Error -> GenericError { viewModel.dispatch(ProfileAction.ComponentLifecycle.Visible) }
+            is Lce.Content -> {
+                val configuration = LocalConfiguration.current
+                val content = state.value
+                Column(modifier = Modifier.verticalScroll(scrollState).padding(top = 32.dp)) {
+                    Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        val fallbackLabel = content.me.displayName ?: content.me.userId.value
+                        val avatarSize = configuration.percentOfHeight(0.2f)
+                        Box {
+                            CircleishAvatar(content.me.avatarUrl?.value, fallbackLabel, avatarSize)
 
-    when (val state = profile.content) {
-        is Lce.Loading -> CenteredLoading()
-        is Lce.Error -> GenericError { viewModel.start() }
-        is Lce.Content -> {
-            val configuration = LocalConfiguration.current
-            val content = state.value
-            Column {
-                Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    val fallbackLabel = content.me.displayName ?: content.me.userId.value
-                    val avatarSize = configuration.percentOfHeight(0.2f)
-                    Box {
-                        CircleishAvatar(content.me.avatarUrl?.value, fallbackLabel, avatarSize)
-
-                        // TODO enable once edit support is added
-                        if (false) {
-                            IconButton(modifier = Modifier
-                                .size(avatarSize * 0.314f)
-                                .align(Alignment.BottomEnd)
-                                .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
-                                .padding(12.dp),
-                                onClick = {}
-                            ) {
-                                Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                            // TODO enable once edit support is added
+                            if (false) {
+                                IconButton(modifier = Modifier
+                                    .size(avatarSize * 0.314f)
+                                    .align(Alignment.BottomEnd)
+                                    .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                                    .padding(12.dp),
+                                    onClick = {}
+                                ) {
+                                    Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                                }
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+
+                    TextRow(
+                        title = "Display name",
+                        content = content.me.displayName ?: "Not set",
+                    )
+                    TextRow(
+                        title = "User id",
+                        content = content.me.userId.value,
+                    )
+                    TextRow(
+                        title = "Homeserver",
+                        content = content.me.homeServerUrl.value,
+                    )
+
+                    TextRow(
+                        title = "Invitations",
+                        content = "${content.invitationsCount} pending",
+                        onClick = { viewModel.dispatch(ProfileAction.GoToInvitations) }
+                    )
                 }
-                Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-
-                TextRow(
-                    title = "Display name",
-                    content = content.me.displayName ?: "Not set",
-                )
-                TextRow(
-                    title = "User id",
-                    content = content.me.userId.value,
-                )
-                TextRow(
-                    title = "Homeserver",
-                    content = content.me.homeServerUrl.value,
-                )
-
-                TextRow(
-                    title = "Invitations",
-                    content = "${content.invitationsCount} pending",
-                    onClick = { viewModel.goToInvitations() }
-                )
             }
+        }
+        IconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }) {
+            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
         }
     }
 }
 
 @Composable
-private fun SpiderItemScope.Invitations(viewModel: ProfileViewModel, invitations: Page.Invitations) {
+private fun SpiderItemScope.Invitations(viewModel: ProfileState, invitations: Page.Invitations) {
     when (val state = invitations.content) {
         is Lce.Loading -> CenteredLoading()
         is Lce.Content -> {
@@ -133,11 +140,11 @@ private fun SpiderItemScope.Invitations(viewModel: ProfileViewModel, invitations
                     TextRow(title = text, includeDivider = false) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Row {
-                            Button(modifier = Modifier.weight(1f), onClick = { viewModel.rejectRoomInvite(it.roomId) }) {
+                            Button(modifier = Modifier.weight(1f), onClick = { viewModel.dispatch(ProfileAction.RejectRoomInvite(it.roomId)) }) {
                                 Text("Reject".uppercase())
                             }
                             Spacer(modifier = Modifier.fillMaxWidth(0.1f))
-                            Button(modifier = Modifier.weight(1f), onClick = { viewModel.acceptRoomInvite(it.roomId) }) {
+                            Button(modifier = Modifier.weight(1f), onClick = { viewModel.dispatch(ProfileAction.AcceptRoomInvite(it.roomId)) }) {
                                 Text("Accept".uppercase())
                             }
                         }
@@ -154,7 +161,7 @@ private fun SpiderItemScope.Invitations(viewModel: ProfileViewModel, invitations
 private fun RoomInvite.inviterName() = this.from.displayName?.let { "$it (${this.from.id.value})" } ?: this.from.id.value
 
 @Composable
-private fun ProfileViewModel.ObserveEvents() {
+private fun ProfileState.ObserveEvents() {
 //    StartObserving {
 //        this@ObserveEvents.events.launch {
 //            when (it) {

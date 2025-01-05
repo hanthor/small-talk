@@ -1,10 +1,8 @@
 import * as google from '@googleapis/androidpublisher'
 import * as fs from "fs"
 import * as http from 'https'
-import matrixcs, * as matrix from 'matrix-js-sdk'
-import request from 'request'
+import * as matrix from 'matrix-js-sdk'
 import * as url from 'url'
-matrixcs.request(request)
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -50,7 +48,7 @@ export const release = async (github, version, applicationId, artifacts, config)
         owner: config.owner,
         repo: config.repo,
         tag_name: version.name,
-        prerelease: true,
+        prerelease: false,
         generate_release_notes: true,
     })
 
@@ -215,7 +213,7 @@ const sendReleaseMessage = async (release, config) => {
     const content = {
         "body": `New release`,
         "format": "org.matrix.custom.html",
-        "formatted_body": `New release rolling out <a href="${release.url}">${release.tag_name}</a>`,
+        "formatted_body": `New release rolling out <a href="${release.html_url}">${release.tag_name}</a>`,
         "msgtype": "m.text"
     }
     await client.sendEvent(config.matrixRoomId, "m.room.message", content, "")
